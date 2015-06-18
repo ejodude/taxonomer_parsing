@@ -486,9 +486,9 @@ if 1:
 	extremely quickly using multiprocessing 
 	"""
 	if server_output:
-		class_results = p.imap(process_classify_file, itertools.izip( classify_data, itertools.repeat(id_dict) ) )
+		class_results = itertools.imap(process_classify_file, itertools.izip( classify_data, itertools.repeat(id_dict) ) )
 	else:
-		class_results = p.imap(process_individual_classify_file, itertools.izip( classify_data, itertools.repeat(id_dict) ) )
+		class_results = itertools.imap(process_individual_classify_file, itertools.izip( classify_data, itertools.repeat(id_dict) ) )
 		#class_results = p.apply_async(process_individual_classify_file, itertools.izip( classify_data, itertools.repeat(id_dict) ) )
 	
 
