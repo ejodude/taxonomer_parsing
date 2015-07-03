@@ -12,7 +12,7 @@ import re
 #globals
 #########
 
-parser=argparse.ArgumentParser(description="This script will generate binner and classifier counts for the default taxonomer databases")
+parser=argparse.ArgumentParser(description="This script will generate binner and classifier counts for default taxonomer databases. Makes a summary table for total number of reads binned and classified for normalization and data summarization.")
 parser.add_argument("class_file", type=str, help="classifier output file")
 parser.add_argument("output", type=str, help="file path for count output files")
 arg=parser.parse_args()
