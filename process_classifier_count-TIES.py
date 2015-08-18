@@ -245,7 +245,8 @@ def proc_counts( count_data, r):
 	if count_data[0].shape[0] != len( r.keys() ):
 		raise Exception('key lengths differ btw count dict and the processed reads')
 		
-	counts = np.array( [cnt[1] for cnt in r.values()] ) #totals for given chunk we processed. 
+	counts = np.array( [ r[key][1] for key in count_data[0] ] )  #totals for given chunk we processed. 
+	#in the same order as count_data
 
 	#append the counts in r to the count dataset
 	count_data[1] = count_data[1] + counts
@@ -336,6 +337,47 @@ def write_count_tables( count_data, id_dict, file_name ):
 		cnt = str( counts[ tax_bool ][0] )
 		raw.write("%s\n" %(  "\t".join( print_list + [cnt] ) ) )
 		cnt = str( appended_counts[ tax_bool ][0] )
+		appended.write("%s\n" %(  "\t".join( print_list + [cnt] ) ) )
+
+
+def write_count_tables2( count_data, id_dict, file_name ):
+	"""
+	function writes the contents of count data to two tables
+	1). raw classifier counts "raw_cnt.txt"
+	2). perpetuated count table "full_cnt.txt"
+	for raw and perpetuated counts respectively
+	
+	Needs:
+	count_data - counts and associated info
+	id_dict - contain taxonomy information 
+	file_name - variable for writing the files should be root file name ie. "file" 
+	"""
+	taxa = count_data[0]
+	counts = count_data[1]
+	appended_counts = count_data[2]
+	
+	#open our two output files. 
+	raw = open( file_name + "_raw_cnt.txt", 'w' )
+	appended = open( file_name + "_full_cnt.txt", 'w' )
+	
+	#write header lines. 
+	header = ["taxa", "taxon_level", "count"]
+	raw.write("%s\n" %( "\t".join( header ) ) )
+	appended.write("%s\n" %( "\t".join( header ) ) )
+	
+	#iterate over numerically sorted taxon list. 
+	#we store the indexes of the sort so we can rapidly access taxa and count data types. 
+	for tax_idx in np.argsort( taxa.astype( np.int ) ):
+		tax = taxa[ tax_idx ] 
+		tax_dat = id_dict[tax][0]
+		level = str(int( tax_dat[1] )) #extra shit to turn this into easy int for sorting/filteirng.
+		name = tax_dat[2]
+		print_list = [ name, level ] 
+		
+		#now send the results to outfile. 
+		cnt = str( counts[ tax_idx ] )
+		raw.write("%s\n" %(  "\t".join( print_list + [cnt] ) ) )
+		cnt = str( appended_counts[ tax_idx ] )
 		appended.write("%s\n" %(  "\t".join( print_list + [cnt] ) ) )
 
 
@@ -522,7 +564,7 @@ if 1:
 	count_data = parse_taxonomy_counts( count_data, id_dict)
 
 	#and write the output to a file:
-	write_count_tables( count_data, id_dict, file_name )
+	write_count_tables2( count_data, id_dict, file_name )
 
 
 	#final output to std err that the run has finished. 
