@@ -92,7 +92,7 @@ def write_results( count_dict, file_results, out ):
 	o = open(out, 'w') #open output
 
 	tkeys = count_dict.keys() #grab dictionary keys
-	tkeys.sort() #sort them on tax ID; should 
+	tkeys = sorted( tkeys, key=lambda item: int(item.split(";")[-1]) ) #sort them on tax ID; should 
 	data = [] #empty data list for 2-D count array
 	levels = [] #keep track of level data. 
 	for tk in tkeys:
