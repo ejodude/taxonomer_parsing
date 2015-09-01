@@ -17,8 +17,8 @@ import numpy as np
 
 parser=argparse.ArgumentParser(description="script pareses taxonomer output into experiment count matrix\
  for a paired exprimental-control sample")
-parser.add_argument("expt_file", type=str, help="sample count tables; should be full count result")
-parser.add_argument("ctl_file", type=str, help="control count table; should be full count result")
+parser.add_argument("expt_file", type=str, help="sample count tables; should be full count result, provide multiple samples in a comma separated list")
+parser.add_argument("ctl_file", type=str, help="control count table; should be full count result, provide multiple samples in a comma separated list")
 parser.add_argument("out", type=str, help="output file for final combined count table")
 parser.add_argument("--method", type=str, help="normalization method: one of [ 'level_proportion' ] ")
 parser.add_argument("--rd_cutoff", type=int, help="number of reads for taxon to be reported in the output file")
