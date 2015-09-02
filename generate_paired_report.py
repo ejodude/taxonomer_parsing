@@ -22,8 +22,10 @@ parser.add_argument("ctl_file", type=str, help="control count table; should be f
 parser.add_argument("out", type=str, help="output file for final combined count table")
 parser.add_argument("--method", type=str, help="normalization method: one of [ 'level_proportion' ] ")
 parser.add_argument("--rd_cutoff", type=int, help="number of reads for taxon to be reported in the output file")
+parser.add_argument("--raw_dump", action='store_true', help="boolean to add raw counts to normalized table")
 parser.set_defaults(rd_cutoff=10) #set default count cutoff to 10 if arg not supplied.
 parser.set_defaults(method="level_proportion") #set default normalization method 
+parser.set_defaults(raw_dump=False)
 arg=parser.parse_args()
 
 
@@ -41,6 +43,7 @@ ctl_file= arg.ctl_file
 out = arg.out 
 method = arg.method 
 cutoff = arg.rd_cutoff
+raw_dump = arg.raw_dump
 
 ###############
 #Functions/
@@ -178,6 +181,8 @@ def process_results( expt_dict, ctl_dict, cutoff, method ):
 	#generate return data structure. 
 	RV[ 'expt' ] = norm_expt[ filter_bools ]
 	RV[ 'ctl' ] = norm_ctl[ filter_bools ]
+	RV[ 'expt_raw' ] = expt_array[ filter_bools ]
+	RV[ 'ctl_raw' ] = ctl_array[ filter_bools ]
 	RV[ 'taxIDs' ] = taxIDs[ filter_bools ] 
 	RV[ 'levels' ] = levels[ filter_bools ] 
 
@@ -204,6 +209,15 @@ def write_results( RV, expt_list, ctl_list, out ):
 	#combine expt and ctl matrix by row. 
 	count_mat = np.concatenate( (expt, ctl ), axis=1 ) 
 	sample_list = expt_list + ctl_list #combine sample names. 
+
+        if raw_dump: #parse more data
+                raw_expt = RV['expt_raw']
+                raw_ctl = RV['ctl_raw']
+                raw_count_mat = np.concatenate( (raw_expt, raw_ctl ), axis=1 )
+                count_mat = np.concatenate( (count_mat, raw_count_mat ), axis=1 ) #combine norm and raw data
+                slist = expt_list + ctl_list #combine sample ids again
+                slist = [ i + "_raw_count" for i in slist ] #append text to differentiate raw data columns
+                sample_list = sample_list + slist
 
 	if len( sample_list ) != count_mat.shape[1]:
 		raise Exception("mismatch in dimensions between sample and count matrix")
